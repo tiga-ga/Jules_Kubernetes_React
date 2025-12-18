@@ -8,7 +8,7 @@
 
 *   Docker
 *   kubectl
-*   ローカルKubernetes環境 (例: Minikube, Docker Desktop, Kind)
+*   Minikube
 
 ## 手順
 
@@ -20,20 +20,12 @@
 docker build -t my-flask-app:latest .
 ```
 
-### 2. イメージの読み込み (Minikube / Kind の場合)
+### 2. イメージの読み込み
 
-Docker Desktopを使用している場合はこの手順をスキップできます。MinikubeやKindを使用している場合、ビルドしたイメージをクラスタ内に読み込む必要があります。
-
-**Minikubeの場合:**
+ビルドしたイメージをMinikubeのクラスタ内に読み込む必要があります。
 
 ```bash
 minikube image load my-flask-app:latest
-```
-
-**Kindの場合:**
-
-```bash
-kind load docker-image my-flask-app:latest
 ```
 
 ### 3. アプリケーションのデプロイ
