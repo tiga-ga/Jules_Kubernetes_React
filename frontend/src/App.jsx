@@ -1,49 +1,75 @@
-import { useState, useEffect } from 'react'
-import './App.css'
+import React, { useState } from 'react';
+import './App.css';
+import OutputList from './components/OutputList';
+import OutputFormModal from './components/OutputFormModal';
+import useOutputs from './hooks/useOutputs';
 
 function App() {
-  const [items, setItems] = useState([])
-  const [loading, setLoading] = useState(true)
+    const { outputs, loading, error, createOutput, updateOutput, deleteOutput } = useOutputs();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingOutput, setEditingOutput] = useState(null);
 
-  useEffect(() => {
-    fetch('/api/feeds')
-      .then(response => response.json())
-      .then(data => {
-        setItems(data)
-        setLoading(false)
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error)
-        setLoading(false)
-      })
-  }, [])
+    const handleCreate = () => {
+        setEditingOutput(null);
+        setIsModalOpen(true);
+    };
 
-  if (loading) {
-    return <div className="loading">Loading...</div>
-  }
+    const handleEdit = (output) => {
+        setEditingOutput(output);
+        setIsModalOpen(true);
+    };
 
-  return (
-    <div className="container">
-      <header>
-        <h1>Content Aggregator</h1>
-      </header>
-      <main>
-        <div className="grid">
-          {items.map((item, index) => (
-            <div key={index} className={`card ${item.type}`}>
-              <div className="card-type">{item.type === 'youtube' ? 'YouTube' : 'Blog'}</div>
-              <img src={item.thumbnail} alt={item.title} className="thumbnail" />
-              <div className="card-content">
-                <h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a></h3>
-                <p>{item.description}</p>
-                <span className="date">{item.date}</span>
-              </div>
-            </div>
-          ))}
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this output?')) {
+            await deleteOutput(id);
+        }
+    };
+
+    const handleSave = async (data) => {
+        try {
+            if (editingOutput) {
+                await updateOutput(editingOutput.id, data);
+            } else {
+                await createOutput(data);
+            }
+            setIsModalOpen(false);
+        } catch (err) {
+            alert('Failed to save output: ' + err.message);
+        }
+    };
+
+    return (
+        <div className="App">
+            <header className="App-header" style={{ marginBottom: '20px', padding: '10px', backgroundColor: '#282c34', color: 'white' }}>
+                <h1>Output Manager</h1>
+            </header>
+
+            <main style={{ padding: '20px' }}>
+                <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2>My Outputs</h2>
+                    <button onClick={handleCreate} style={{ padding: '10px 20px', fontSize: '16px' }}>+ New Output</button>
+                </div>
+
+                {loading && <p>Loading...</p>}
+                {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+
+                {!loading && !error && (
+                    <OutputList
+                        outputs={outputs}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                    />
+                )}
+            </main>
+
+            <OutputFormModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleSave}
+                initialData={editingOutput}
+            />
         </div>
-      </main>
-    </div>
-  )
+    );
 }
 
-export default App
+export default App;
