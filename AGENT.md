@@ -25,11 +25,11 @@
 ## 3. アーキテクチャ・レジストリ (Architecture Registry)
 *現在確定している技術スタック一覧*
 
-* **Frontend:** (Unselected)
-* **Backend:** (Unselected)
-* **Database:** (Unselected)
-* **Infrastructure:** (Unselected)
-* **Testing/CI:** (Unselected)
+* **Frontend:** React (Vite)
+* **Backend:** Python (Flask)
+* **Database:** PostgreSQL
+* **Infrastructure:** Kubernetes (Minikube)
+* **Testing/CI:** pytest (Backend), Vitest (Frontend)
 
 ## 4. 運用コンテキスト (Operational Context)
 *開発に必要な動的情報*
@@ -39,4 +39,6 @@
 
 **ディレクトリ構造:**
 * `/docs`: Specifications & Logs
-* `/src`: Source Code (Structure pending)
+* `/frontend`: React Frontend Source
+* `/k8s`: Kubernetes Manifests
+* `/`: Flask Backend Source
